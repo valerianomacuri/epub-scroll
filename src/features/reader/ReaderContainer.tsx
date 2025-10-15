@@ -70,6 +70,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
         const startIndex = 0;
         console.log({ progress });
         const spineItems = epubService.getSpineItems();
+        console.log({ spineItems });
         if (spineItems.length > 0) {
           const chapter = await epubService.getChapterContent(
             spineItems[startIndex].href,
@@ -116,7 +117,9 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
       try {
         const chapter = await epubService.getChapterContent(href, index);
         console.log('handle_chapter_select', { chapter });
-        setCurrentChapter(chapter);
+        setCurrentChapter((prevChapter) => {
+          return chapter;
+        });
         // setCurrentIndex(index);
         saveProgress(index, 0);
       } catch (err) {
@@ -195,6 +198,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
       <Box sx={{ flex: 1, overflow: 'hidden' }}>
         {currentChapter && (
           <ChapterView
+            href={currentChapter.href}
             content={currentChapter.content}
             settings={settings}
             onScroll={handleScroll}

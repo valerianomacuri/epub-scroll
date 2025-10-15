@@ -3,7 +3,7 @@
  * Single Responsibility: Display TOC navigation
  */
 
-import React from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 import {
   Drawer,
   List,
@@ -13,8 +13,18 @@ import {
   Typography,
   Box,
   IconButton,
+  Tabs,
+  Tab,
+  AppBar,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
+import {
+  Bookmark,
+  Close as CloseIcon,
+  Create,
+  ExpandLess,
+  ExpandMore,
+  Toc,
+} from '@mui/icons-material';
 import type { TocItem } from '../../core/types/epub.types';
 
 interface TocPanelProps {
@@ -25,6 +35,60 @@ interface TocPanelProps {
   onChapterSelect: (href: string, index: number) => void;
   bookTitle?: string;
 }
+interface TocItemProps {
+  item: TocItem;
+  level?: number;
+  selected: (item: TocItem) => boolean;
+  onClick: (item: TocItem) => void;
+}
+
+const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
+  const [open, setOpen] = useState(false);
+
+  const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(!open);
+  };
+
+  return (
+    <React.Fragment key={item.id}>
+      <ListItemButton
+        selected={selected(item)}
+        onClick={() => onClick(item)}
+        sx={{ pl: 2 + level * 2 }}
+      >
+        <ListItemText
+          primary={item.label}
+          primaryTypographyProps={{
+            variant: 'body2',
+            fontWeight: selected ? 600 : 400,
+          }}
+        />
+        {item.subitems.length > 0 &&
+          (open ? (
+            <IconButton onClick={handleClick}>
+              <ExpandLess />
+            </IconButton>
+          ) : (
+            <IconButton onClick={handleClick}>
+              <ExpandMore />
+            </IconButton>
+          ))}
+      </ListItemButton>
+      {open &&
+        item.subitems?.map((subitem, subIndex) => (
+          // renderTocItem(subitem, subIndex, level + 1)
+          <TocItem
+            item={subitem}
+            level={level + 1}
+            selected={selected}
+            onClick={onClick}
+          />
+        ))}
+    </React.Fragment>
+  );
+};
 
 export const TocPanel: React.FC<TocPanelProps> = ({
   open,
@@ -32,34 +96,8 @@ export const TocPanel: React.FC<TocPanelProps> = ({
   toc,
   currentChapter,
   onChapterSelect,
-  bookTitle,
 }) => {
-  console.log({ currentChapter });
-  const renderTocItem = (item: TocItem, index: number, level: number = 0) => (
-    <React.Fragment key={item.id}>
-      <ListItemButton
-        selected={item.href === currentChapter}
-        onClick={() => {
-          console.log({ toc, currentChapter, item, index, level });
-          onChapterSelect(item.href, index);
-          onClose();
-        }}
-        sx={{ pl: 2 + level * 2 }}
-      >
-        <ListItemText
-          primary={item.label}
-          primaryTypographyProps={{
-            variant: level === 0 ? 'body1' : 'body2',
-            fontWeight: item.href === currentChapter ? 600 : 400,
-          }}
-        />
-      </ListItemButton>
-      {item.subitems?.map((subitem, subIndex) =>
-        renderTocItem(subitem, subIndex, level + 1)
-      )}
-    </React.Fragment>
-  );
-
+  console.log({ currentChapter, toc });
   return (
     <Drawer
       anchor="left"
@@ -74,21 +112,30 @@ export const TocPanel: React.FC<TocPanelProps> = ({
     >
       <Toolbar
         sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          padding: '0px !important',
         }}
       >
-        <Typography variant="h6" noWrap>
-          {bookTitle || 'Contents'}
-        </Typography>
-        <IconButton onClick={onClose} edge="end">
-          <CloseIcon />
-        </IconButton>
+        <Box width={'100%'}>
+          <Tabs aria-label="icon tabs" value="toc" variant="fullWidth">
+            <Tab value="toc" icon={<Toc />} aria-label="table of content" />
+            <Tab icon={<Create />} aria-label="highlighted" />
+            <Tab icon={<Bookmark />} aria-label="markers" />
+          </Tabs>
+        </Box>
       </Toolbar>
-
       <Box sx={{ overflow: 'auto', flex: 1 }}>
-        <List>{toc.map((item, index) => renderTocItem(item, index))}</List>
+        <List sx={{ marginLeft: '0px !important', padding: '0px' }}>
+          {toc.map((item, index) => (
+            <TocItem
+              item={item}
+              selected={(item) => item.href === currentChapter}
+              onClick={(item) => {
+                onChapterSelect(item.href, index);
+                onClose();
+              }}
+            />
+          ))}
+        </List>
       </Box>
     </Drawer>
   );

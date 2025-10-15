@@ -105,7 +105,7 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
           </RadioGroup>
         </FormControl>
 
-        <FormControl fullWidth sx={{ mb: 2 }}>
+        {/* <FormControl fullWidth sx={{ mb: 2 }}>
           <FormLabel>Font Size: {settings.fontSize}px</FormLabel>
           <Slider
             value={settings.fontSize}
@@ -133,7 +133,7 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
             marks
             valueLabelDisplay="auto"
           />
-        </FormControl>
+        </FormControl> */}
       </Menu>
     </>
   );

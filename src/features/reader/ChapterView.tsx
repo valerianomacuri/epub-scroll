@@ -8,12 +8,14 @@ import { Box } from '@mui/material';
 import type { ReaderSettings } from '../../core/types/epub.types';
 
 interface ChapterViewProps {
+  href: string;
   content: string;
   settings: ReaderSettings;
   onScroll?: (scrollTop: number) => void;
 }
 
 export const ChapterView: React.FC<ChapterViewProps> = ({
+  href,
   content,
   settings,
   onScroll,
@@ -34,6 +36,35 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
       element?.removeEventListener('scroll', handleScroll);
     };
   }, [onScroll]);
+
+  // useEffect(() => {
+  //   if (!content) return;
+  //   if (!href) return;
+  //   const element = contentRef.current;
+  //   if (!element) return;
+  //   if (href.includes('#')) {
+  //     const index = href.indexOf('#');
+  //     const hashUrl = href.substring(index);
+  //     window.location.hash = hashUrl;
+  //     return;
+  //   }
+  //   element.scrollTop = 0;
+  // }, [content, href]);
+
+  useEffect(() => {
+    if (!href) return;
+    if (!href.includes('#')) return;
+    const index = href.indexOf('#');
+    const hashUrl = href.substring(index);
+    window.location.hash = hashUrl;
+  }, [content, href]);
+
+  useEffect(() => {
+    if (!content) return;
+    const element = contentRef.current;
+    if (!element) return;
+    element.scrollTop = 0;
+  }, [content]);
 
   return (
     <Box
@@ -99,7 +130,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
           //   padding: 0,
           // },
           // // custom styles
-          // textAlign: 'justify',
+          // textAlign: 'justify !important',
         }}
       />
     </Box>
