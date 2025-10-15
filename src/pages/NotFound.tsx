@@ -1,5 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { Box, Typography, Button } from "@mui/material";
+import { Home as HomeIcon } from "@mui/icons-material";
 
 const NotFound = () => {
   const location = useLocation();
@@ -9,15 +11,34 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">404</h1>
-        <p className="mb-4 text-xl text-gray-600">Oops! Page not found</p>
-        <a href="/" className="text-blue-500 underline hover:text-blue-700">
-          Return to Home
-        </a>
-      </div>
-    </div>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        bgcolor: 'background.default',
+        p: 3,
+      }}
+    >
+      <Typography variant="h1" sx={{ fontSize: '6rem', fontWeight: 700, color: 'primary.main' }}>
+        404
+      </Typography>
+      <Typography variant="h5" gutterBottom>
+        Oops! Page not found
+      </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        The page you're looking for doesn't exist.
+      </Typography>
+      <Button
+        variant="contained"
+        startIcon={<HomeIcon />}
+        href="/"
+      >
+        Return to Home
+      </Button>
+    </Box>
   );
 };
 
