@@ -21,7 +21,7 @@ interface TocPanelProps {
   open: boolean;
   onClose: () => void;
   toc: TocItem[];
-  currentChapter: number;
+  currentChapter: string;
   onChapterSelect: (href: string, index: number) => void;
   bookTitle?: string;
 }
@@ -34,11 +34,13 @@ export const TocPanel: React.FC<TocPanelProps> = ({
   onChapterSelect,
   bookTitle,
 }) => {
+  console.log({ currentChapter });
   const renderTocItem = (item: TocItem, index: number, level: number = 0) => (
     <React.Fragment key={item.id}>
       <ListItemButton
-        selected={index === currentChapter}
+        selected={item.href === currentChapter}
         onClick={() => {
+          console.log({ toc, currentChapter, item, index, level });
           onChapterSelect(item.href, index);
           onClose();
         }}
@@ -48,7 +50,7 @@ export const TocPanel: React.FC<TocPanelProps> = ({
           primary={item.label}
           primaryTypographyProps={{
             variant: level === 0 ? 'body1' : 'body2',
-            fontWeight: index === currentChapter ? 600 : 400,
+            fontWeight: item.href === currentChapter ? 600 : 400,
           }}
         />
       </ListItemButton>
@@ -62,6 +64,7 @@ export const TocPanel: React.FC<TocPanelProps> = ({
     <Drawer
       anchor="left"
       open={open}
+      keepMounted
       onClose={onClose}
       sx={{
         '& .MuiDrawer-paper': {
@@ -85,9 +88,7 @@ export const TocPanel: React.FC<TocPanelProps> = ({
       </Toolbar>
 
       <Box sx={{ overflow: 'auto', flex: 1 }}>
-        <List>
-          {toc.map((item, index) => renderTocItem(item, index))}
-        </List>
+        <List>{toc.map((item, index) => renderTocItem(item, index))}</List>
       </Box>
     </Drawer>
   );

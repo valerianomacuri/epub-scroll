@@ -5,7 +5,11 @@
  */
 
 import ePub, { Book, NavItem } from 'epubjs';
-import type { EpubMetadata, TocItem, ChapterContent } from '../types/epub.types';
+import type {
+  EpubMetadata,
+  TocItem,
+  ChapterContent,
+} from '../types/epub.types';
 
 export class EpubService {
   private book: Book | null = null;
@@ -27,7 +31,7 @@ export class EpubService {
     if (!this.book) throw new Error('Book not loaded');
 
     const metadata = await this.book.loaded.metadata;
-    
+
     return {
       title: metadata.title || 'Unknown Title',
       creator: metadata.creator || 'Unknown Author',
@@ -51,20 +55,23 @@ export class EpubService {
   /**
    * Get chapter content by href
    */
-  async getChapterContent(href: string, index: number): Promise<ChapterContent> {
+  async getChapterContent(
+    href: string,
+    index: number
+  ): Promise<ChapterContent> {
     if (!this.book) throw new Error('Book not loaded');
 
     const section = this.book.spine.get(href);
     if (!section) throw new Error(`Chapter not found: ${href}`);
 
-    await section.load(this.book.load.bind(this.book));
-    const content = section.document?.body?.innerHTML || '';
-    
+    const content = await section.render(this.book.load.bind(this.book));
+    const htmlContent = content as string;
     return {
       id: section.idref || href,
       title: section.index.toString(),
-      content,
+      content: htmlContent,
       index,
+      href,
     };
   }
 

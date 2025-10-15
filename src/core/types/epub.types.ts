@@ -24,6 +24,7 @@ export interface ChapterContent {
   title: string;
   content: string;
   index: number;
+  href: string;
 }
 
 export interface ReadingProgress {

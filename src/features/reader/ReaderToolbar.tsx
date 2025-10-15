@@ -28,7 +28,6 @@ import type { ReaderSettings } from '../../core/types/epub.types';
 
 interface ReaderToolbarProps {
   bookTitle: string;
-  currentChapter: string;
   onMenuClick: () => void;
   onHomeClick: () => void;
   settings: ReaderSettings;
@@ -37,7 +36,6 @@ interface ReaderToolbarProps {
 
 export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
   bookTitle,
-  currentChapter,
   onMenuClick,
   onHomeClick,
   settings,
@@ -67,11 +65,8 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
           </IconButton>
 
           <Box sx={{ flex: 1, ml: 2, overflow: 'hidden' }}>
-            <Typography variant="subtitle1" noWrap>
+            <Typography variant="subtitle1" fontWeight="bold" noWrap>
               {bookTitle}
-            </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap>
-              {currentChapter}
             </Typography>
           </Box>
 
@@ -99,7 +94,9 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
             row
             value={settings.theme}
             onChange={(e) =>
-              onSettingsChange({ theme: e.target.value as ReaderSettings['theme'] })
+              onSettingsChange({
+                theme: e.target.value as ReaderSettings['theme'],
+              })
             }
           >
             <FormControlLabel value="light" control={<Radio />} label="Light" />
