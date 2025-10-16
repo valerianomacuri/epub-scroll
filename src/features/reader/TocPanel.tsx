@@ -137,7 +137,7 @@ export const TocPanel: React.FC<TocPanelProps> = ({
         </Box>
       </Toolbar>
       <Box sx={{ overflow: 'auto', flex: 1 }}>
-        <List sx={{ marginLeft: '0px !important', padding: '0px' }}>
+        <List sx={{ marginLeft: '0px !important', padding: '0px !important' }}>
           {toc.map((item, index) => (
             <TocItem
               key={item.id}
