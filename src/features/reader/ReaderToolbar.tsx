@@ -22,13 +22,21 @@ import {
   Slide,
   Paper,
   Dialog,
+  Stack,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
   Settings as SettingsIcon,
   Home as HomeIcon,
+  Circle,
 } from '@mui/icons-material';
 import type { ReaderSettings } from '../../core/types/epub.types';
+
+enum Theme {
+  DARK = 'dark',
+  LIGHT = 'light',
+  SEPIA = 'sepia',
+}
 
 interface HideOnScrollProps {
   children?: React.ReactElement<unknown>;
@@ -64,11 +72,9 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
   settings,
   onSettingsChange,
 }) => {
-  const [appBarVisible, setAppBarVisible] = useState(true);
   const [open, setOpen] = useState(false);
 
   const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAppBarVisible(false);
     setOpen(true);
   };
 
@@ -76,78 +82,34 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
     setOpen(false);
   };
 
-  useEffect(() => {
-    let isTouch = false;
-
-    const handleTouch = (event: TouchEvent) => {
-      // Ignora si tocaste un enlace, botón o elemento interactivo
-      const target = event.target as HTMLElement;
-      if (
-        target.closest('a, button, input, select, textarea, label') ||
-        window.getSelection()?.toString() // Ignora si hay texto seleccionado
-      ) {
-        return;
-      }
-
-      isTouch = true;
-      setAppBarVisible((prev) => !prev);
-    };
-
-    const handleClick = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (
-        target.closest('a, button, input, select, textarea, label') ||
-        window.getSelection()?.toString()
-      ) {
-        return;
-      }
-
-      if (isTouch) {
-        isTouch = false; // resetea flag para clicks sintéticos
-        return;
-      }
-
-      setAppBarVisible((prev) => !prev);
-    };
-
-    document.addEventListener('touchstart', handleTouch);
-    document.addEventListener('click', handleClick);
-
-    return () => {
-      document.removeEventListener('touchstart', handleTouch);
-      document.removeEventListener('click', handleClick);
-    };
-  }, []);
   return (
     <>
-      <Slide appear={false} direction="down" in={appBarVisible}>
-        <AppBar position="fixed" color="default" elevation={1}>
-          <Toolbar>
-            <IconButton
-              edge="start"
-              color="inherit"
-              onClick={onMenuClick}
-              aria-label="menu"
-            >
-              <MenuIcon />
-            </IconButton>
+      <AppBar position="sticky" color="default" elevation={1}>
+        <Toolbar>
+          <IconButton
+            edge="start"
+            color="inherit"
+            onClick={onMenuClick}
+            aria-label="menu"
+          >
+            <MenuIcon />
+          </IconButton>
 
-            <Box sx={{ flex: 1, ml: 2, overflow: 'hidden' }}>
-              <Typography variant="subtitle1" fontWeight="bold" noWrap>
-                {bookTitle}
-              </Typography>
-            </Box>
+          <Box sx={{ flex: 1, ml: 2, overflow: 'hidden' }}>
+            <Typography variant="subtitle1" fontWeight="bold" noWrap>
+              {bookTitle}
+            </Typography>
+          </Box>
 
-            <IconButton color="inherit" onClick={handleSettingsClick}>
-              <SettingsIcon />
-            </IconButton>
+          <IconButton color="inherit" onClick={handleSettingsClick}>
+            <SettingsIcon />
+          </IconButton>
 
-            <IconButton color="inherit" onClick={onHomeClick} edge="end">
-              <HomeIcon />
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-      </Slide>
+          <IconButton color="inherit" onClick={onHomeClick} edge="end">
+            <HomeIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
       <Dialog
         keepMounted
         open={open}
