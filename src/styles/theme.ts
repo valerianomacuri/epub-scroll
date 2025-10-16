@@ -51,7 +51,7 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
       },
     },
     shape: {
-      borderRadius: 8,
+      borderRadius: 4,
     },
     components: {
       MuiButton: {

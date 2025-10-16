@@ -3,7 +3,7 @@
  * Single Responsibility: Display reader controls
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -18,6 +18,10 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
+  useScrollTrigger,
+  Slide,
+  Paper,
+  Dialog,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -25,6 +29,25 @@ import {
   Home as HomeIcon,
 } from '@mui/icons-material';
 import type { ReaderSettings } from '../../core/types/epub.types';
+
+interface HideOnScrollProps {
+  children?: React.ReactElement<unknown>;
+}
+
+const HideOnScroll = (props: HideOnScrollProps) => {
+  const { children } = props;
+  const trigger = useScrollTrigger({
+    target: document.getElementById('epub-container-view'),
+    disableHysteresis: true,
+    threshold: 0,
+  });
+
+  return (
+    <Slide appear={false} direction="down" in={!trigger}>
+      {children ?? <div />}
+    </Slide>
+  );
+};
 
 interface ReaderToolbarProps {
   bookTitle: string;
@@ -41,51 +64,110 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
   settings,
   onSettingsChange,
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [appBarVisible, setAppBarVisible] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+    setAppBarVisible(false);
+    setOpen(true);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
+    setOpen(false);
   };
 
+  useEffect(() => {
+    let isTouch = false;
+
+    const handleTouch = (event: TouchEvent) => {
+      // Ignora si tocaste un enlace, botón o elemento interactivo
+      const target = event.target as HTMLElement;
+      if (
+        target.closest('a, button, input, select, textarea, label') ||
+        window.getSelection()?.toString() // Ignora si hay texto seleccionado
+      ) {
+        return;
+      }
+
+      isTouch = true;
+      setAppBarVisible((prev) => !prev);
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        target.closest('a, button, input, select, textarea, label') ||
+        window.getSelection()?.toString()
+      ) {
+        return;
+      }
+
+      if (isTouch) {
+        isTouch = false; // resetea flag para clicks sintéticos
+        return;
+      }
+
+      setAppBarVisible((prev) => !prev);
+    };
+
+    document.addEventListener('touchstart', handleTouch);
+    document.addEventListener('click', handleClick);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouch);
+      document.removeEventListener('click', handleClick);
+    };
+  }, []);
   return (
     <>
-      <AppBar position="sticky" color="default" elevation={1}>
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={onMenuClick}
-            aria-label="menu"
-          >
-            <MenuIcon />
-          </IconButton>
+      <Slide appear={false} direction="down" in={appBarVisible}>
+        <AppBar position="fixed" color="default" elevation={1}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={onMenuClick}
+              aria-label="menu"
+            >
+              <MenuIcon />
+            </IconButton>
 
-          <Box sx={{ flex: 1, ml: 2, overflow: 'hidden' }}>
-            <Typography variant="subtitle1" fontWeight="bold" noWrap>
-              {bookTitle}
-            </Typography>
-          </Box>
+            <Box sx={{ flex: 1, ml: 2, overflow: 'hidden' }}>
+              <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                {bookTitle}
+              </Typography>
+            </Box>
 
-          <IconButton color="inherit" onClick={handleSettingsClick}>
-            <SettingsIcon />
-          </IconButton>
+            <IconButton color="inherit" onClick={handleSettingsClick}>
+              <SettingsIcon />
+            </IconButton>
 
-          <IconButton color="inherit" onClick={onHomeClick} edge="end">
-            <HomeIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+            <IconButton color="inherit" onClick={onHomeClick} edge="end">
+              <HomeIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+      </Slide>
+      <Dialog
+        keepMounted
+        open={open}
         onClose={handleClose}
-        PaperProps={{
-          sx: { width: 320, p: 2 },
+        sx={{ top: 0, left: 0 }}
+        slotProps={{
+          paper: {
+            elevation: 1,
+            sx: {
+              width: 320,
+              px: 3,
+              py: 2,
+              m: 1,
+            },
+            style: {
+              position: 'absolute',
+              top: 0,
+              right: 0,
+            },
+          },
         }}
       >
         <FormControl fullWidth sx={{ mb: 3 }}>
@@ -104,37 +186,7 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
             <FormControlLabel value="sepia" control={<Radio />} label="Sepia" />
           </RadioGroup>
         </FormControl>
-
-        {/* <FormControl fullWidth sx={{ mb: 2 }}>
-          <FormLabel>Font Size: {settings.fontSize}px</FormLabel>
-          <Slider
-            value={settings.fontSize}
-            onChange={(_, value) =>
-              onSettingsChange({ fontSize: value as number })
-            }
-            min={14}
-            max={32}
-            step={2}
-            marks
-            valueLabelDisplay="auto"
-          />
-        </FormControl>
-
-        <FormControl fullWidth>
-          <FormLabel>Line Height: {settings.lineHeight}</FormLabel>
-          <Slider
-            value={settings.lineHeight}
-            onChange={(_, value) =>
-              onSettingsChange({ lineHeight: value as number })
-            }
-            min={1.2}
-            max={2.4}
-            step={0.1}
-            marks
-            valueLabelDisplay="auto"
-          />
-        </FormControl> */}
-      </Menu>
+      </Dialog>
     </>
   );
 };

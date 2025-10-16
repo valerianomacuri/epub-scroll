@@ -86,6 +86,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
 
   return (
     <Box
+      id="epub-container-view"
       ref={contentRef}
       sx={{
         height: '100%',
