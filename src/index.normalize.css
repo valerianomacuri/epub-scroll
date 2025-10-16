@@ -19,9 +19,9 @@ ol,
 li,
 blockquote {
   /* Elimina el margen por defecto en todos los elementos principales. */
-  margin: 0;
+  margin: 0 !important;
   /* Elimina el relleno por defecto. */
-  padding: 0;
+  padding: 0 !important;
   /* Usa un modelo de caja más predecible. */
   box-sizing: border-box;
   /* Asegura que el color de texto se herede de la configuración del lector. */
@@ -37,7 +37,7 @@ ul,
 ol {
   /* Restaura el margen lateral para que las viñetas sean visibles.
        A menudo los EPUB usan su propio CSS para esto. Ajusta según necesites. */
-  margin-left: 1.5em;
+  margin-left: 1.5em !important;
   list-style-position: outside;
 }
 
@@ -45,15 +45,15 @@ ol {
 p {
   /* La mayoría de los EPUBs usan párrafos sin sangría.
        Si quieres restaurar el espacio entre párrafos, usa margin-bottom: 1em !important; */
-  text-indent: 0;
+  text-indent: 0 !important;
   /* Restaura un mínimo de separación para que el texto sea legible */
-  margin-bottom: 0.5em;
+  margin-bottom: 0.5em !important;
 }
 
 blockquote {
   /* Estilos básicos para las citas */
-  margin: 1em 40px;
-  padding-left: 1em;
+  margin: 1em 40px !important;
+  padding-left: 1em !important;
   border-left: 4px solid #ccc;
 }
 
@@ -69,7 +69,7 @@ a {
 img,
 video {
   /* Asegura que los medios no se desborden de su contenedor. */
-  max-width: 100%;
+  max-width: 100% !important;
   /* Permite que las imágenes se ajusten automáticamente al alto. */
   height: auto;
   /* Elimina cualquier espacio adicional debajo de las imágenes. */

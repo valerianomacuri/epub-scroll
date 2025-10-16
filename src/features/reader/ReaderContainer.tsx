@@ -39,9 +39,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [initialScrollPosition, setInitialScrollPosition] = useState<
-    number | null
-  >(null);
+  const [initialScrollPosition, setInitialScrollPosition] = useState<number>();
 
   // Generate book ID from filename
   const bookId = file.name.replace('.epub', '');
@@ -63,7 +61,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
         ]);
 
         setMetadata(meta);
-        console.log({ tocData });
+
         setToc(tocData);
 
         // Load saved progress or start from beginning
@@ -118,7 +116,6 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
     async (href: string, index: number) => {
       try {
         const chapter = await epubService.getChapterContent(href);
-        console.log('handle_chapter_select', { chapter });
         setCurrentChapter(chapter);
         saveProgress(href, 0);
       } catch (err) {
@@ -131,6 +128,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   // Handle scroll position save
   const handleScroll = useCallback(
     (scrollTop: number) => {
+      if (!currentChapter?.href) return;
       saveProgress(currentChapter.href, scrollTop);
     },
     [currentChapter?.href, saveProgress]
@@ -202,15 +200,16 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
           />
         )}
       </Box>
-
-      <TocPanel
-        open={tocOpen}
-        onClose={() => setTocOpen(false)}
-        toc={toc}
-        currentChapter={currentChapter.href}
-        onChapterSelect={handleChapterSelect}
-        bookTitle={metadata?.title}
-      />
+      {currentChapter && (
+        <TocPanel
+          open={tocOpen}
+          onClose={() => setTocOpen(false)}
+          toc={toc}
+          currentHref={currentChapter.href}
+          onChapterSelect={handleChapterSelect}
+          bookTitle={metadata?.title}
+        />
+      )}
     </Box>
   );
 };

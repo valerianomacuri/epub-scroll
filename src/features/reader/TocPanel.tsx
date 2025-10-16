@@ -31,7 +31,7 @@ interface TocPanelProps {
   open: boolean;
   onClose: () => void;
   toc: TocItem[];
-  currentChapter: string;
+  currentHref: string;
   onChapterSelect: (href: string, index: number) => void;
   bookTitle?: string;
 }
@@ -46,9 +46,11 @@ const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
   const [open, setOpen] = useState(false);
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
     setOpen(!open);
+  };
+
+  const stopRippleOnParent: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation();
   };
 
   return (
@@ -62,16 +64,16 @@ const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
           primary={item.label}
           primaryTypographyProps={{
             variant: 'body2',
-            fontWeight: selected ? 600 : 400,
+            fontWeight: selected(item) ? 600 : 400,
           }}
         />
-        {item.subitems.length > 0 &&
+        {(item.subitems?.length || -1) > 0 &&
           (open ? (
-            <IconButton onClick={handleClick}>
+            <IconButton onMouseDown={stopRippleOnParent} onClick={handleClick}>
               <ExpandLess />
             </IconButton>
           ) : (
-            <IconButton onClick={handleClick}>
+            <IconButton onMouseDown={stopRippleOnParent} onClick={handleClick}>
               <ExpandMore />
             </IconButton>
           ))}
@@ -94,10 +96,9 @@ export const TocPanel: React.FC<TocPanelProps> = ({
   open,
   onClose,
   toc,
-  currentChapter,
+  currentHref,
   onChapterSelect,
 }) => {
-  console.log({ currentChapter, toc });
   return (
     <Drawer
       anchor="left"
@@ -129,7 +130,7 @@ export const TocPanel: React.FC<TocPanelProps> = ({
             <TocItem
               key={item.id}
               item={item}
-              selected={(item) => item.href === currentChapter}
+              selected={(item) => item.href === currentHref}
               onClick={(item) => {
                 onChapterSelect(item.href, index);
                 onClose();

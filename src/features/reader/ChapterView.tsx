@@ -11,7 +11,7 @@ interface ChapterViewProps {
   href: string;
   content: string;
   settings: ReaderSettings;
-  initialScrollPosition: number;
+  initialScrollPosition?: number;
   onScroll?: (scrollTop: number) => void;
 }
 
@@ -28,11 +28,14 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
     if (!initialScrollPosition) return;
     const element = contentRef.current;
     if (!element) return;
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       element.scrollTo({
         top: initialScrollPosition,
       });
     });
+    return () => {
+      clearTimeout(timeoutId);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

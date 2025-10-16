@@ -21,6 +21,7 @@ export class EpubService {
   async loadFromFile(file: File): Promise<void> {
     const arrayBuffer = await file.arrayBuffer();
     this.book = ePub(arrayBuffer);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.book.ready;
   }
 
