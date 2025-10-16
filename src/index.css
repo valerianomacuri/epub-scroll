@@ -72,14 +72,6 @@ a:not([href]) {
   pointer-events: none; /* evita comportamiento de enlace */
 }
 
-a[data-type='noteref'] {
-  font-size: 0.8em;
-  vertical-align: super;
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-}
-
 /* 5. Imágenes y Medios */
 img,
 video {
