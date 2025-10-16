@@ -16,6 +16,7 @@ import {
   Tabs,
   Tab,
   AppBar,
+  Tooltip,
 } from '@mui/material';
 import {
   Bookmark,
@@ -46,6 +47,7 @@ const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
   const [open, setOpen] = useState(false);
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation();
     setOpen(!open);
   };
 
@@ -131,8 +133,8 @@ export const TocPanel: React.FC<TocPanelProps> = ({
         <Box width={'100%'}>
           <Tabs aria-label="icon tabs" value="toc" variant="fullWidth">
             <Tab value="toc" icon={<Toc />} aria-label="table of content" />
-            <Tab icon={<Create />} aria-label="highlighted" />
-            <Tab icon={<Bookmark />} aria-label="markers" />
+            <Tab icon={<Create />} aria-label="highlighted" disabled />
+            <Tab icon={<Bookmark />} aria-label="markers" disabled />
           </Tabs>
         </Box>
       </Toolbar>
