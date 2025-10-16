@@ -79,6 +79,17 @@ export class EpubService {
       }
     });
 
+    $('pre').each((i, el) => {
+      const $el = $(el);
+      // Añade atributo estándar y clase reconocida por traductores
+      $el.attr('translate', 'no');
+      // clase 'notranslate' la reconoce Google Translate y otros
+      const existing = $el.attr('class') || '';
+      if (!existing.split(/\s+/).includes('notranslate')) {
+        $el.attr('class', (existing + ' notranslate').trim());
+      }
+    });
+
     const cleanHtml = $.html();
 
     return {
