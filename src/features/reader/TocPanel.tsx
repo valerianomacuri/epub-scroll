@@ -78,8 +78,8 @@ const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
       </ListItemButton>
       {open &&
         item.subitems?.map((subitem, subIndex) => (
-          // renderTocItem(subitem, subIndex, level + 1)
           <TocItem
+            key={subitem.id}
             item={subitem}
             level={level + 1}
             selected={selected}
@@ -127,6 +127,7 @@ export const TocPanel: React.FC<TocPanelProps> = ({
         <List sx={{ marginLeft: '0px !important', padding: '0px' }}>
           {toc.map((item, index) => (
             <TocItem
+              key={item.id}
               item={item}
               selected={(item) => item.href === currentChapter}
               onClick={(item) => {

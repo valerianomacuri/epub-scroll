@@ -55,10 +55,7 @@ export class EpubService {
   /**
    * Get chapter content by href
    */
-  async getChapterContent(
-    href: string,
-    index: number
-  ): Promise<ChapterContent> {
+  async getChapterContent(href: string): Promise<ChapterContent> {
     if (!this.book) throw new Error('Book not loaded');
 
     const section = this.book.spine.get(href);
@@ -68,9 +65,7 @@ export class EpubService {
     const htmlContent = content as string;
     return {
       id: section.idref || href,
-      title: section.index.toString(),
       content: htmlContent,
-      index,
       href,
     };
   }

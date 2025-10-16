@@ -21,15 +21,13 @@ export interface TocItem {
 
 export interface ChapterContent {
   id: string;
-  title: string;
   content: string;
-  index: number;
   href: string;
 }
 
 export interface ReadingProgress {
   bookId: string;
-  currentChapter: number;
+  chapterHref: string;
   scrollPosition: number;
   lastReadDate: string;
 }

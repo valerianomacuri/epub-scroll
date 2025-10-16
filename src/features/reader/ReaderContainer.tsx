@@ -33,13 +33,15 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   const [currentChapter, setCurrentChapter] = useState<ChapterContent | null>(
     null
   );
-  // const [currentIndex, setCurrentIndex] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
   const [settings, setSettings] = useState<ReaderSettings>(
     StorageService.getSettings()
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initialScrollPosition, setInitialScrollPosition] = useState<
+    number | null
+  >(null);
 
   // Generate book ID from filename
   const bookId = file.name.replace('.epub', '');
@@ -66,19 +68,19 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
 
         // Load saved progress or start from beginning
         const progress = StorageService.getProgress(bookId);
-        // const startIndex = progress?.currentChapter || 0;
-        const startIndex = 0;
-        console.log({ progress });
-        const spineItems = epubService.getSpineItems();
-        console.log({ spineItems });
-        if (spineItems.length > 0) {
+        if (progress) {
+          setInitialScrollPosition(progress.scrollPosition);
           const chapter = await epubService.getChapterContent(
-            spineItems[startIndex].href,
-            startIndex
+            progress.chapterHref
           );
-          console.log({ chapter });
           setCurrentChapter(chapter);
-          // setCurrentIndex(startIndex);
+        }
+        if (!progress) {
+          const snipeItems = epubService.getSpineItems();
+          const chapter = await epubService.getChapterContent(
+            snipeItems[0].href
+          );
+          setCurrentChapter(chapter);
         }
 
         setLoading(false);
@@ -100,10 +102,10 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
 
   // Save reading progress
   const saveProgress = useCallback(
-    (chapterIndex: number, scrollPosition: number) => {
+    (chapterHref: string, scrollPosition: number) => {
       StorageService.saveProgress({
         bookId,
-        currentChapter: chapterIndex,
+        chapterHref,
         scrollPosition,
         lastReadDate: new Date().toISOString(),
       });
@@ -115,13 +117,10 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   const handleChapterSelect = useCallback(
     async (href: string, index: number) => {
       try {
-        const chapter = await epubService.getChapterContent(href, index);
+        const chapter = await epubService.getChapterContent(href);
         console.log('handle_chapter_select', { chapter });
-        setCurrentChapter((prevChapter) => {
-          return chapter;
-        });
-        // setCurrentIndex(index);
-        saveProgress(index, 0);
+        setCurrentChapter(chapter);
+        saveProgress(href, 0);
       } catch (err) {
         console.error('Failed to load chapter:', err);
       }
@@ -132,12 +131,9 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   // Handle scroll position save
   const handleScroll = useCallback(
     (scrollTop: number) => {
-      // saveProgress(currentIndex, scrollTop);
+      saveProgress(currentChapter.href, scrollTop);
     },
-    [
-      // currentIndex
-      saveProgress,
-    ]
+    [currentChapter?.href, saveProgress]
   );
 
   // Handle settings change
@@ -198,6 +194,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
       <Box sx={{ flex: 1, overflow: 'hidden' }}>
         {currentChapter && (
           <ChapterView
+            initialScrollPosition={initialScrollPosition}
             href={currentChapter.href}
             content={currentChapter.content}
             settings={settings}
