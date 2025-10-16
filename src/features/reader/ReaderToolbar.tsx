@@ -123,6 +123,7 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
               px: 3,
               py: 2,
               m: 1,
+              gap: 1,
             },
             style: {
               position: 'absolute',
@@ -148,6 +149,25 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
             <FormControlLabel value="sepia" control={<Radio />} label="Sepia" />
           </RadioGroup>
         </FormControl>
+        {/* <FormControl fullWidth sx={{ mb: 3 }}>
+          <FormLabel>Text Align</FormLabel>
+          <RadioGroup
+            row
+            value={settings.align}
+            onChange={(e) =>
+              onSettingsChange({
+                align: e.target.value as ReaderSettings['align'],
+              })
+            }
+          >
+            <FormControlLabel value="left" control={<Radio />} label="Left" />
+            <FormControlLabel
+              value="justify"
+              control={<Radio />}
+              label="Justify"
+            />
+          </RadioGroup>
+        </FormControl> */}
       </Dialog>
     </>
   );

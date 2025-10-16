@@ -37,4 +37,5 @@ export interface ReaderSettings {
   theme: 'light' | 'dark' | 'sepia';
   lineHeight: number;
   fontFamily: string;
+  align: string;
 }

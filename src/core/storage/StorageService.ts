@@ -79,6 +79,7 @@ export class StorageService {
       theme: 'sepia',
       lineHeight: 1.6,
       fontFamily: 'Georgia, serif',
+      align: 'left',
     };
   }
 
