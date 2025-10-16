@@ -1,3 +1,4 @@
+import * as cheerio from 'cheerio';
 /**
  * EPUB Service - Dependency Inversion Principle
  * Abstract away epub.js implementation details
@@ -64,9 +65,25 @@ export class EpubService {
 
     const content = await section.render(this.book.load.bind(this.book));
     const htmlContent = content as string;
+
+    const $ = cheerio.load(htmlContent);
+
+    // Selecciona todos los <a> sin href
+    $('a:not([href])').each(function () {
+      const inner = $(this).html();
+      if (inner !== null) {
+        $(this).replaceWith(inner);
+      } else {
+        // Si no hay contenido interior, simplemente lo eliminamos
+        $(this).remove();
+      }
+    });
+
+    const cleanHtml = $.html();
+
     return {
       id: section.idref || href,
-      content: htmlContent,
+      content: cleanHtml,
       href,
     };
   }
