@@ -3,7 +3,7 @@
  * Single Responsibility: Display TOC navigation
  */
 
-import React, { MouseEventHandler, useState } from 'react';
+import React, { MouseEventHandler, TouchEventHandler, useState } from 'react';
 import {
   Drawer,
   List,
@@ -49,7 +49,11 @@ const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
     setOpen(!open);
   };
 
-  const stopRippleOnParent: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const stopMouseRippleOnParent: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.stopPropagation();
+  };
+
+  const stopTouchRippleOnParent: TouchEventHandler<HTMLButtonElement> = (e) => {
     e.stopPropagation();
   };
 
@@ -69,11 +73,19 @@ const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
         />
         {(item.subitems?.length || -1) > 0 &&
           (open ? (
-            <IconButton onMouseDown={stopRippleOnParent} onClick={handleClick}>
+            <IconButton
+              onMouseDown={stopMouseRippleOnParent}
+              onTouchStart={stopTouchRippleOnParent}
+              onClick={handleClick}
+            >
               <ExpandLess />
             </IconButton>
           ) : (
-            <IconButton onMouseDown={stopRippleOnParent} onClick={handleClick}>
+            <IconButton
+              onMouseDown={stopMouseRippleOnParent}
+              onTouchStart={stopTouchRippleOnParent}
+              onClick={handleClick}
+            >
               <ExpandMore />
             </IconButton>
           ))}
