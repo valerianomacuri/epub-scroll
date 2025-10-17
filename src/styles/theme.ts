@@ -90,31 +90,12 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
             verticalAlign: 'middle', // elimina el espacio extra debajo
           },
 
-          // 🅱️ Negrita
           'strong, b': {
-            fontWeight: 'bold', // enfatiza en negrita
+            fontWeight: 'bold',
           },
 
-          // ✍️ Cursiva
           'em, i': {
-            fontStyle: 'italic', // enfatiza en cursiva
-          },
-
-          a: {
-            color: `${theme.palette.text.primary} !important`,
-            textDecoration: 'underline !important',
-            cursor: 'pointer',
-          },
-
-          'a:not([href])': {
-            textDecoration: 'none !important',
-            cursor: 'default',
-            pointerEvents: 'none',
-          },
-
-          // TODO: mover al scope de chapter view
-          h1: {
-            color: `${theme.palette.text.primary} !important`,
+            fontStyle: 'italic',
           },
         }),
       },
