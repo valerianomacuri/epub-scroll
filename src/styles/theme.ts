@@ -12,16 +12,6 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
   return {
     palette: {
       mode: isDark ? 'dark' : 'light',
-      primary: {
-        main: '#00796B',
-        light: '#48a999',
-        dark: '#004c40',
-      },
-      secondary: {
-        main: '#FF9800',
-        light: '#ffc749',
-        dark: '#c66900',
-      },
       background: {
         default: isSepia ? '#fdfbf7' : isDark ? '#3d3b49' : '#ffffff',
         paper: isSepia ? '#fdfbf7' : isDark ? '#3d3b49' : '#ffffff',
@@ -110,8 +100,8 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
             fontStyle: 'italic', // enfatiza en cursiva
           },
 
+          // TODO: mover los siguientes selectores al scope de chapter view
           a: {
-            color: `${theme.palette.text.primary} !important`,
             textDecoration: 'underline !important',
             cursor: 'pointer',
           },
@@ -120,11 +110,6 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
             textDecoration: 'none !important',
             cursor: 'default',
             pointerEvents: 'none',
-          },
-
-          // TODO: mover al scope de chapter view
-          h1: {
-            color: `${theme.palette.text.primary} !important`,
           },
         }),
       },

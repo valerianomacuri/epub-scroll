@@ -29,7 +29,7 @@ interface TocPanelProps {
   onClose: () => void;
   toc: TocItem[];
   currentHref: string;
-  onChapterSelect: (href: string, index: number) => void;
+  onChapterSelect: ({ href, idref }: { href: string; idref: string }) => void;
   bookTitle?: string;
 }
 interface TocItemProps {
@@ -67,6 +67,7 @@ const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
           primaryTypographyProps={{
             variant: 'body2',
             fontWeight: selected(item) ? 600 : 400,
+            textAlign: 'left',
           }}
         />
         {(item.subitems?.length || -1) > 0 &&
@@ -109,7 +110,6 @@ export const TocPanel: React.FC<TocPanelProps> = ({
   currentHref,
   onChapterSelect,
 }) => {
-  console.log({ toc });
   return (
     <Drawer
       anchor="left"
@@ -137,13 +137,13 @@ export const TocPanel: React.FC<TocPanelProps> = ({
       </Toolbar>
       <Box sx={{ overflow: 'auto', flex: 1 }}>
         <List sx={{ marginLeft: '0px !important', padding: '0px !important' }}>
-          {toc.map((item, index) => (
+          {toc.map((item) => (
             <TocItem
               key={item.id}
               item={item}
               selected={(item) => item.href === currentHref}
               onClick={(item) => {
-                onChapterSelect(item.href, index);
+                onChapterSelect({ href: item.href, idref: 'unload_idref' });
                 onClose();
               }}
             />

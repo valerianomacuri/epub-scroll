@@ -11,6 +11,7 @@ import type {
   TocItem,
   ChapterContent,
 } from '../types/epub.types';
+import Section from 'epubjs/types/section';
 
 export class EpubService {
   private book: Book | null = null;
@@ -51,17 +52,37 @@ export class EpubService {
     if (!this.book) throw new Error('Book not loaded');
 
     const navigation = await this.book.loaded.navigation;
-    return this.mapNavItems(navigation.toc);
+    console.log({ navigation });
+    const tocItems = this.mapNavItems(navigation.toc);
+    return tocItems;
   }
 
   /**
    * Get chapter content by href
    */
-  async getChapterContent(href: string): Promise<ChapterContent> {
+  async getChapterContent({
+    href,
+    idref,
+  }: {
+    href: string;
+    idref: string;
+  }): Promise<ChapterContent> {
+    console.log({ idref, href });
     if (!this.book) throw new Error('Book not loaded');
 
-    const section = this.book.spine.get(href);
-    if (!section) throw new Error(`Chapter not found: ${href}`);
+    let section: Section | null = null;
+
+    if (href) {
+      section = this.book.spine.get(href);
+    }
+
+    if (!section && idref) {
+      section = this.book.spine.get(idref);
+    }
+
+    if (!section) {
+      throw new Error(`Chapter not found: ${href || idref}`);
+    }
 
     const content = await section.render(this.book.load.bind(this.book));
     const htmlContent = content as string;
@@ -117,23 +138,22 @@ export class EpubService {
     });
 
     const cleanHtml = $.html();
-
     return {
-      id: section.idref || href,
+      idref: section.idref,
+      href: section.href,
       content: cleanHtml,
-      href,
     };
   }
 
   /**
    * Get all spine items (chapters in reading order)
    */
-  getSpineItems(): Array<{ href: string; index: number }> {
+  getSpineItems(): Array<{ href: string; idref: string }> {
     if (!this.book) throw new Error('Book not loaded');
 
-    const items: Array<{ href: string; index: number }> = [];
-    this.book.spine.each((item: any, index: number) => {
-      items.push({ href: item.href, index });
+    const items: Array<{ href: string; idref: string }> = [];
+    this.book.spine.each((item) => {
+      items.push({ href: item.href, idref: item.idref });
     });
     return items;
   }

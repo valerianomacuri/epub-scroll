@@ -33,6 +33,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   const [currentChapter, setCurrentChapter] = useState<ChapterContent | null>(
     null
   );
+  console.log({ currentChapter });
   const [tocOpen, setTocOpen] = useState(false);
   const [settings, setSettings] = useState<ReaderSettings>(
     StorageService.getSettings()
@@ -66,18 +67,21 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
 
         // Load saved progress or start from beginning
         const progress = StorageService.getProgress(bookId);
-        if (progress) {
+        if (progress?.chapterIdref || progress?.chapterHref) {
           setInitialScrollPosition(progress.scrollPosition);
-          const chapter = await epubService.getChapterContent(
-            progress.chapterHref
-          );
+          const chapter = await epubService.getChapterContent({
+            idref: progress.chapterIdref,
+            href: progress.chapterHref,
+          });
           setCurrentChapter(chapter);
         }
-        if (!progress) {
+        if (!progress?.chapterIdref && !progress?.chapterHref) {
           const snipeItems = epubService.getSpineItems();
-          const chapter = await epubService.getChapterContent(
-            snipeItems[0].href
-          );
+          console.log({ snipeItems });
+          const chapter = await epubService.getChapterContent({
+            idref: snipeItems[0].idref,
+            href: snipeItems[0].href,
+          });
           setCurrentChapter(chapter);
         }
 
@@ -100,10 +104,19 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
 
   // Save reading progress
   const saveProgress = useCallback(
-    (chapterHref: string, scrollPosition: number) => {
+    ({
+      chapterIdref,
+      chapterHref,
+      scrollPosition,
+    }: {
+      chapterIdref: string;
+      chapterHref: string;
+      scrollPosition: number;
+    }) => {
       StorageService.saveProgress({
         bookId,
         chapterHref,
+        chapterIdref,
         scrollPosition,
         lastReadDate: new Date().toISOString(),
       });
@@ -113,11 +126,15 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
 
   // Handle chapter change
   const handleChapterSelect = useCallback(
-    async (href: string, index: number) => {
+    async ({ href, idref }: { href: string; idref: string }) => {
       try {
-        const chapter = await epubService.getChapterContent(href);
+        const chapter = await epubService.getChapterContent({ href, idref });
         setCurrentChapter(chapter);
-        saveProgress(href, 0);
+        saveProgress({
+          chapterIdref: idref,
+          chapterHref: href,
+          scrollPosition: 0,
+        });
       } catch (err) {
         console.error('Failed to load chapter:', err);
       }
@@ -129,9 +146,14 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   const handleScroll = useCallback(
     (scrollTop: number) => {
       if (!currentChapter?.href) return;
-      saveProgress(currentChapter.href, scrollTop);
+      if (!currentChapter?.idref) return;
+      saveProgress({
+        chapterIdref: currentChapter.idref,
+        chapterHref: currentChapter.href,
+        scrollPosition: scrollTop,
+      });
     },
-    [currentChapter?.href, saveProgress]
+    [currentChapter?.idref, currentChapter?.href, saveProgress]
   );
 
   // Handle settings change
