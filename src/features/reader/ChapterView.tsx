@@ -95,11 +95,15 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
     >
       <Box
         dangerouslySetInnerHTML={{ __html: content }}
-        sx={{
+        sx={(theme) => ({
           maxWidth: 800,
           mx: 'auto',
           p: { xs: 3, sm: 4, md: 6 },
-        }}
+          'p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, span, a, strong, i, em, font':
+            {
+              color: `${theme.palette.text.primary} !important`,
+            },
+        })}
       />
     </Box>
   );
