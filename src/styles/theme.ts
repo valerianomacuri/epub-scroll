@@ -12,16 +12,6 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
   return {
     palette: {
       mode: isDark ? 'dark' : 'light',
-      primary: {
-        main: '#00796B',
-        light: '#48a999',
-        dark: '#004c40',
-      },
-      secondary: {
-        main: '#FF9800',
-        light: '#ffc749',
-        dark: '#c66900',
-      },
       background: {
         default: isSepia ? '#fdfbf7' : isDark ? '#3d3b49' : '#ffffff',
         paper: isSepia ? '#fdfbf7' : isDark ? '#3d3b49' : '#ffffff',

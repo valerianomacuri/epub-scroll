@@ -109,7 +109,6 @@ export const TocPanel: React.FC<TocPanelProps> = ({
   currentHref,
   onChapterSelect,
 }) => {
-  console.log({ toc });
   return (
     <Drawer
       anchor="left"

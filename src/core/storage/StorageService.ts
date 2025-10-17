@@ -76,7 +76,7 @@ export class StorageService {
     // Default settings
     return {
       fontSize: 18,
-      theme: 'sepia',
+      theme: 'light',
       lineHeight: 1.6,
       fontFamily: 'Georgia, serif',
       align: 'left',

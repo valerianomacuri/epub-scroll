@@ -60,8 +60,22 @@ export class EpubService {
   async getChapterContent(href: string): Promise<ChapterContent> {
     if (!this.book) throw new Error('Book not loaded');
 
-    const section = this.book.spine.get(href);
-    if (!section) throw new Error(`Chapter not found: ${href}`);
+    let section = this.book.spine.get(href);
+
+    if (!section) {
+      // Normaliza eliminando fragmentos (#)
+      const cleanHref = href.split('#')[0];
+
+      // Verifica si termina en .xhtml y no empieza ya con "xhtml/"
+      if (cleanHref.endsWith('.xhtml') && !cleanHref.startsWith('xhtml/')) {
+        const prefixedHref = `xhtml/${cleanHref}`;
+        section = this.book.spine.get(prefixedHref);
+      }
+    }
+
+    if (!section) {
+      throw new Error(`Chapter not found: ${href}`);
+    }
 
     const content = await section.render(this.book.load.bind(this.book));
     const htmlContent = content as string;
@@ -101,6 +115,17 @@ export class EpubService {
       }
     });
 
+    $('sub').each((i, el) => {
+      const $el = $(el);
+      // Añade atributo estándar y clase reconocida por traductores
+      $el.attr('translate', 'no');
+      // clase 'notranslate' la reconoce Google Translate y otros
+      const existing = $el.attr('class') || '';
+      if (!existing.split(/\s+/).includes('notranslate')) {
+        $el.attr('class', (existing + ' notranslate').trim());
+      }
+    });
+
     // Selecciona todas las etiquetas <sup> que están vacías
     $('sup:empty').each((i, el) => {
       const $sup = $(el);
@@ -117,9 +142,7 @@ export class EpubService {
     });
 
     const cleanHtml = $.html();
-
     return {
-      id: section.idref || href,
       content: cleanHtml,
       href,
     };

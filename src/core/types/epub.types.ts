@@ -20,7 +20,6 @@ export interface TocItem {
 }
 
 export interface ChapterContent {
-  id: string;
   content: string;
   href: string;
 }
