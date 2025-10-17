@@ -100,7 +100,6 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
           mx: 'auto',
           p: { xs: 3, sm: 4, md: 6 },
         }}
-
       />
     </Box>
   );
