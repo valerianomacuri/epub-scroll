@@ -48,7 +48,11 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   }, [epubService, epubService.isReady]);
   const currentSnipeItem = useMemo(() => {
     if (!currentChapter?.href || !snipeItems) return null;
-    return snipeItems.find((item) => currentChapter.href.includes(item.href));
+    return snipeItems.find(
+      (item) =>
+        currentChapter.href.includes(item.href) ||
+        item.href.includes(currentChapter.href)
+    );
   }, [currentChapter?.href, snipeItems]);
 
   const nextChapter = async () => {
@@ -230,7 +234,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
                   maxWidth: 800,
                   mx: 'auto',
                   p: { xs: 3, sm: 4, md: 6 },
-                  paddingTop: '0px !important',
+                  pb: { xs: 6, sm: 8, md: 12 },
                 }}
               >
                 <Link
