@@ -10,17 +10,13 @@ import {
   ListItemButton,
   ListItemText,
   Toolbar,
-  Typography,
   Box,
   IconButton,
   Tabs,
   Tab,
-  AppBar,
-  Tooltip,
 } from '@mui/material';
 import {
   Bookmark,
-  Close as CloseIcon,
   Create,
   ExpandLess,
   ExpandMore,
@@ -93,7 +89,7 @@ const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
           ))}
       </ListItemButton>
       {open &&
-        item.subitems?.map((subitem, subIndex) => (
+        item.subitems?.map((subitem) => (
           <TocItem
             key={subitem.id}
             item={subitem}
@@ -113,6 +109,7 @@ export const TocPanel: React.FC<TocPanelProps> = ({
   currentHref,
   onChapterSelect,
 }) => {
+  console.log({ toc });
   return (
     <Drawer
       anchor="left"

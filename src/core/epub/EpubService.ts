@@ -90,6 +90,47 @@ export class EpubService {
       }
     });
 
+    // Selecciona todas las etiquetas <sup> que están vacías
+    $('sup:empty').each((i, el) => {
+      const $sup = $(el);
+      const $nextElement = $sup.next();
+
+      // Comprueba si el siguiente elemento es un <a> Y si tiene el atributo correcto
+      if (
+        $nextElement.is('a') &&
+        $nextElement.attr('data-type') === 'noteref'
+      ) {
+        // Si cumple ambas condiciones, mueve el <a> dentro del <sup>
+        $sup.append($nextElement);
+      }
+    });
+
+    // Procesar <link rel="stylesheet"> que apuntan a Blob
+    const linkElements = $('link[rel="stylesheet"]');
+
+    for (let i = 0; i < linkElements.length; i++) {
+      const el = linkElements[i];
+      const hrefAttr = $(el).attr('href');
+      if (hrefAttr) {
+        try {
+          // Obtener CSS desde la URL (Blob o remoto)
+          const res = await fetch(hrefAttr);
+          let cssText = await res.text();
+
+          // Remover !important
+          cssText = cssText.replace(/\s*!important\s*/g, '');
+
+          // Reemplazar el <link> por <style> con CSS limpio
+          const styleEl = `<style>${cssText}</style>`;
+          $(el).replaceWith(styleEl);
+        } catch (err) {
+          console.warn(`Error cargando CSS ${hrefAttr}:`, err);
+          // opcional: eliminar link si falla
+          $(el).remove();
+        }
+      }
+    }
+
     const cleanHtml = $.html();
 
     return {

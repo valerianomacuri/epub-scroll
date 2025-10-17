@@ -13,14 +13,14 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
     palette: {
       mode: isDark ? 'dark' : 'light',
       primary: {
-        main: '#3f51b5',
-        light: '#757de8',
-        dark: '#002984',
+        main: '#00796B',
+        light: '#48a999',
+        dark: '#004c40',
       },
       secondary: {
-        main: '#f50057',
-        light: '#ff5983',
-        dark: '#bb002f',
+        main: '#FF9800',
+        light: '#ffc749',
+        dark: '#c66900',
       },
       background: {
         default: isSepia ? '#fdfbf7' : isDark ? '#3d3b49' : '#ffffff',
@@ -56,16 +56,10 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
     components: {
       MuiCssBaseline: {
         styleOverrides: (theme) => ({
-          styleOverrides: {
-            '*': {
-              fontFamily:
-                '"Roboto", "Helvetica", "Arial", sans-serif !important',
-            },
-          },
           'body, div, p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote': {
-            margin: 0, // Elimina márgenes por defecto
-            padding: 0, // Elimina padding por defecto
-            boxSizing: 'border-box', // Usa box-sizing más predecible
+            margin: 0,
+            padding: 0,
+            boxSizing: 'border-box',
           },
 
           // 📌 Listas básicas
@@ -128,6 +122,7 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
             pointerEvents: 'none',
           },
 
+          // TODO: mover al scope de chapter view
           h1: {
             color: `${theme.palette.text.primary} !important`,
           },
