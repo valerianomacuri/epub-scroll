@@ -3,7 +3,7 @@
  * Single Responsibility: Render chapter content with custom styling
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { ReactNode, useEffect, useRef } from 'react';
 import { Box, SxProps, Theme } from '@mui/material';
 import type { ReaderSettings } from '../../core/types/epub.types';
 
@@ -24,6 +24,7 @@ const chapterViewStyles: SxProps<Theme> = (theme) => ({
 interface ChapterViewProps {
   href: string;
   content: string;
+  footer?: ReactNode;
   settings: ReaderSettings;
   initialScrollPosition?: number;
   onScroll?: (scrollTop: number) => void;
@@ -32,6 +33,7 @@ interface ChapterViewProps {
 export const ChapterView: React.FC<ChapterViewProps> = ({
   href,
   content,
+  footer,
   settings,
   initialScrollPosition,
   onScroll,
@@ -111,6 +113,7 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
         dangerouslySetInnerHTML={{ __html: content }}
         sx={chapterViewStyles}
       />
+      {footer}
     </Box>
   );
 };

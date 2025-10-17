@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress, Link, Typography } from '@mui/material';
 import { EpubService } from '../../core/epub/EpubService';
 import { StorageService } from '../../core/storage/StorageService';
 import type {
@@ -44,11 +44,11 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   const snipeItems = useMemo(() => {
     if (!epubService.isReady) return null;
     return epubService.getSpineItems();
-  }, [epubService]);
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [epubService, epubService.isReady]);
   const currentSnipeItem = useMemo(() => {
     if (!currentChapter?.href || !snipeItems) return null;
-    return snipeItems.find((item) => item.href === currentChapter.href);
+    return snipeItems.find((item) => currentChapter.href.includes(item.href));
   }, [currentChapter?.href, snipeItems]);
 
   const nextChapter = async () => {
@@ -215,21 +215,66 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
         settings={settings}
         onSettingsChange={handleSettingsChange}
       />
-      {/* <Box display="flex" justifyContent="space-between">
-        <button onClick={prevChapter}>prev</button>
-        <button onClick={nextChapter}>next</button>
-      </Box> */}
       <Box sx={{ flex: 1, overflow: 'hidden' }}>
         {currentChapter && (
           <ChapterView
             initialScrollPosition={initialScrollPosition}
             href={currentChapter.href}
             content={currentChapter.content}
+            footer={
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 3,
+                  maxWidth: 800,
+                  mx: 'auto',
+                  p: { xs: 3, sm: 4, md: 6 },
+                  paddingTop: '0px !important',
+                }}
+              >
+                <Link
+                  component="button"
+                  color="inherit"
+                  variant="body2"
+                  sx={{
+                    fontFamily: 'inherit',
+                    fontWeight: 'bold',
+                    textDecoration: 'underline',
+                    verticalAlign: 'baseline',
+                    '*': {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                  onClick={prevChapter}
+                >
+                  Prev page
+                </Link>
+                <Link
+                  component="button"
+                  color="inherit"
+                  variant="body2"
+                  sx={{
+                    fontFamily: 'inherit',
+                    fontWeight: 'bold',
+                    textDecoration: 'underline',
+                    verticalAlign: 'baseline',
+                    '*': {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                  onClick={nextChapter}
+                >
+                  Next page
+                </Link>
+              </Box>
+            }
             settings={settings}
             onScroll={handleScroll}
           />
         )}
       </Box>
+
       {currentChapter && (
         <TocPanel
           open={tocOpen}
