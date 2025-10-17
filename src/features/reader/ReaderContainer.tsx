@@ -241,15 +241,16 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
                   component="button"
                   color="inherit"
                   variant="body2"
-                  sx={{
+                  sx={(theme) => ({
                     fontFamily: 'inherit',
-                    fontWeight: 'bold',
+                    fontSize: 'inherit',
+                    color: theme.palette.text.primary,
                     textDecoration: 'underline',
                     verticalAlign: 'baseline',
                     '*': {
                       textDecoration: 'underline',
                     },
-                  }}
+                  })}
                   onClick={prevChapter}
                 >
                   Prev page
@@ -258,15 +259,16 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
                   component="button"
                   color="inherit"
                   variant="body2"
-                  sx={{
+                  sx={(theme) => ({
                     fontFamily: 'inherit',
-                    fontWeight: 'bold',
+                    fontSize: 'inherit',
+                    color: theme.palette.text.primary,
                     textDecoration: 'underline',
                     verticalAlign: 'baseline',
                     '*': {
                       textDecoration: 'underline',
                     },
-                  }}
+                  })}
                   onClick={nextChapter}
                 >
                   Next page

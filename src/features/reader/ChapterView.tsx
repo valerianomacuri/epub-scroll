@@ -10,13 +10,14 @@ import type { ReaderSettings } from '../../core/types/epub.types';
 const chapterViewStyles: SxProps<Theme> = (theme) => ({
   maxWidth: 800,
   mx: 'auto',
-  p: { xs: 3, sm: 4, md: 6 },
+  p: { xs: 2, sm: 4, md: 6 },
   'p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, span, a, strong, i, em, font':
     {
       color: `${theme.palette.text.primary} !important`,
     },
   a: {
     textDecoration: 'underline !important',
+    borderBottom: 'none !important',
     cursor: 'pointer',
   },
 });
