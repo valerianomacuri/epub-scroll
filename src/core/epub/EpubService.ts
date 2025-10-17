@@ -14,6 +14,7 @@ import type {
 
 export class EpubService {
   private book: Book | null = null;
+  private isBookReady: boolean = false;
 
   /**
    * Load EPUB from file
@@ -24,6 +25,11 @@ export class EpubService {
     this.book = ePub(arrayBuffer);
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.book.ready;
+    this.isBookReady = true;
+  }
+
+  get isReady() {
+    return this.isBookReady;
   }
 
   /**

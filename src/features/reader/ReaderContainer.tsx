@@ -4,7 +4,7 @@
  * Follows Container/Presentation pattern
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { EpubService } from '../../core/epub/EpubService';
 import { StorageService } from '../../core/storage/StorageService';
@@ -40,6 +40,33 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [initialScrollPosition, setInitialScrollPosition] = useState<number>();
+
+  const snipeItems = useMemo(() => {
+    if (!epubService.isReady) return null;
+    return epubService.getSpineItems();
+  }, [epubService]);
+
+  const currentSnipeItem = useMemo(() => {
+    if (!currentChapter?.href || !snipeItems) return null;
+    return snipeItems.find((item) => item.href === currentChapter.href);
+  }, [currentChapter?.href, snipeItems]);
+
+  const nextChapter = async () => {
+    if (!snipeItems || !currentSnipeItem) return;
+    if (currentSnipeItem.index === snipeItems.length - 1) return;
+    const chapter = await epubService.getChapterContent(
+      snipeItems[currentSnipeItem.index + 1].href
+    );
+    setCurrentChapter(chapter);
+  };
+  const prevChapter = async () => {
+    if (!snipeItems || !currentSnipeItem) return;
+    if (currentSnipeItem.index === 0) return;
+    const chapter = await epubService.getChapterContent(
+      snipeItems[currentSnipeItem.index - 1].href
+    );
+    setCurrentChapter(chapter);
+  };
 
   // Generate book ID from filename
   const bookId = file.name.replace('.epub', '');
@@ -188,7 +215,10 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
         settings={settings}
         onSettingsChange={handleSettingsChange}
       />
-
+      {/* <Box display="flex" justifyContent="space-between">
+        <button onClick={prevChapter}>prev</button>
+        <button onClick={nextChapter}>next</button>
+      </Box> */}
       <Box sx={{ flex: 1, overflow: 'hidden' }}>
         {currentChapter && (
           <ChapterView
