@@ -84,7 +84,13 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
 
   return (
     <>
-      <AppBar position="sticky" color="default" elevation={1}>
+      <AppBar
+        style={{ margin: '0px !important' }}
+        sx={{ margin: '0px !important' }}
+        position="sticky"
+        color="default"
+        elevation={1}
+      >
         <Toolbar>
           <IconButton
             edge="start"

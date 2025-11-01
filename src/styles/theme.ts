@@ -52,6 +52,10 @@ const getThemeOptions = (mode: 'light' | 'dark' | 'sepia'): ThemeOptions => {
             boxSizing: 'border-box',
           },
 
+          body: {
+            margin: '0px !important',
+          },
+
           // 📌 Listas básicas
           'ul, ol': {
             marginLeft: '1.5em',
