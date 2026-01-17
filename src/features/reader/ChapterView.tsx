@@ -78,6 +78,12 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
     >
       <div
         className="max-w-2xl mx-auto p-4 md:p-6 [&_p]:text-foreground [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground [&_h5]:text-foreground [&_h6]:text-foreground [&_ul]:text-foreground [&_ol]:text-foreground [&_li]:text-foreground [&_blockquote]:text-foreground [&_span]:text-foreground [&_strong]:text-foreground [&_em]:text-foreground [&_i]:text-foreground [&_font]:text-foreground [&_a]:underline [&_a]:no-underline [&_a]:cursor-pointer prose prose-neutral dark:prose-invert"
+        style={{
+          fontSize: `${settings.fontSize}px`,
+          lineHeight: settings.lineHeight,
+          fontFamily: settings.fontFamily,
+          textAlign: settings.align as React.CSSProperties['textAlign'],
+        }}
         dangerouslySetInnerHTML={{ __html: content }}
       />
       {footer}

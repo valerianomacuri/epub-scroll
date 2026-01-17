@@ -9,6 +9,8 @@ import {
   Menu,
   Home,
   BookOpen,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react';
 import type { ReaderSettings } from '../../core/types/epub.types';
 
@@ -55,14 +57,37 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
             </div>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onHomeClick}
-            aria-label="home"
-          >
-            <Home className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onSettingsChange({ fontSize: Math.max(12, settings.fontSize - 2) })}
+              aria-label="decrease font size"
+              disabled={settings.fontSize <= 12}
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+            <span className="text-xs text-muted-foreground w-8 text-center">
+              {settings.fontSize}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onSettingsChange({ fontSize: Math.min(32, settings.fontSize + 2) })}
+              aria-label="increase font size"
+              disabled={settings.fontSize >= 32}
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onHomeClick}
+              aria-label="home"
+            >
+              <Home className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </div>
     </>
