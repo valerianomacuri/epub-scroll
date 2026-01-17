@@ -3,16 +3,13 @@
  * Single Responsibility: Display TOC navigation
  */
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
+import React, { useState, useMemo } from 'react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
-  Bookmark,
-  PenTool,
+  ChevronRight,
   ChevronDown,
-  ChevronUp,
-  List,
+  BookOpen,
+  FileText,
 } from 'lucide-react';
 import type { TocItem } from '../../core/types/epub.types';
 
@@ -30,59 +27,104 @@ interface TocItemProps {
   level?: number;
   selected: (item: TocItem) => boolean;
   onClick: (item: TocItem) => void;
+  expandedItems: Set<string>;
+  onToggleExpand: (itemId: string) => void;
 }
 
-const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
-  const [open, setOpen] = useState(false);
+const TocItem = ({ 
+  item, 
+  level = 0, 
+  selected, 
+  onClick, 
+  expandedItems,
+  onToggleExpand 
+}: TocItemProps) => {
+  const hasChildren = item.subitems && item.subitems.length > 0;
+  const isExpanded = expandedItems.has(item.id);
+  const isSelected = selected(item);
 
-  const handleExpand = (e: React.MouseEvent) => {
+  const handleClick = () => {
+    if (hasChildren && level === 0) {
+      onToggleExpand(item.id);
+    }
+    onClick(item);
+  };
+
+  const handleExpandClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setOpen(!open);
+    onToggleExpand(item.id);
   };
 
   return (
     <React.Fragment key={item.id}>
-      <button
-        className={`w-full text-left px-2 py-2 hover:bg-accent transition-colors ${
-          selected(item) ? 'bg-accent text-accent-foreground' : 'text-foreground'
-        } ${level > 0 ? `pl-${4 + level * 4}` : 'pl-2'}`}
-        style={{ paddingLeft: `${8 + level * 16}px` }}
-        onClick={() => onClick(item)}
+      <div
+        className={`
+          group cursor-pointer transition-all duration-200
+          ${level === 0 ? 'py-3 px-4 border-b border-border/50' : 'py-2'}
+          ${isSelected ? 'bg-primary/10 border-l-4 border-primary' : ''}
+          hover:bg-accent/50
+        `}
+        style={{ 
+          paddingLeft: level === 0 ? '16px' : `${16 + level * 24}px`,
+          marginLeft: level > 0 ? '8px' : '0'
+        }}
+        onClick={handleClick}
       >
         <div className="flex items-center justify-between">
-          <span
-            className={`text-sm ${
-              selected(item) ? 'font-semibold' : 'font-normal'
-            }`}
-          >
-            {item.label}
-          </span>
-          {(item.subitems?.length || -1) > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0"
-              onClick={handleExpand}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {/* Icon for chapters vs subchapters */}
+            {level === 0 ? (
+              <BookOpen className={`h-4 w-4 flex-shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+            ) : (
+              <FileText className={`h-3 w-3 flex-shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
+            )}
+            
+            {/* Chapter/Section title */}
+            <span className={`
+              truncate
+              ${level === 0 
+                ? 'font-semibold text-base' 
+                : 'font-normal text-sm text-muted-foreground'
+              }
+              ${isSelected ? 'text-primary' : ''}
+            `}>
+              {item.label}
+            </span>
+          </div>
+
+          {/* Expand/Collapse icon for main chapters */}
+          {hasChildren && (
+            <button
+              onClick={handleExpandClick}
+              className="p-1 rounded-md hover:bg-accent transition-colors"
+              aria-label={isExpanded ? 'Collapse' : 'Expand'}
             >
-              {open ? (
-                <ChevronUp className="h-4 w-4" />
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
               ) : (
-                <ChevronDown className="h-4 w-4" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
               )}
-            </Button>
+            </button>
           )}
         </div>
-      </button>
-      {open &&
-        item.subitems?.map((subitem) => (
-          <TocItem
-            key={subitem.id}
-            item={subitem}
-            level={level + 1}
-            selected={selected}
-            onClick={onClick}
-          />
-        ))}
+      </div>
+
+      {/* Expanded children */}
+      {isExpanded && hasChildren && (
+        <div className="bg-muted/20">
+          {item.subitems?.map((subitem) => (
+            <TocItem
+              key={subitem.id}
+              item={subitem}
+              level={level + 1}
+              selected={selected}
+              onClick={onClick}
+              expandedItems={expandedItems}
+              onToggleExpand={onToggleExpand}
+            />
+          ))}
+        </div>
+      )}
     </React.Fragment>
   );
 };
@@ -93,43 +135,85 @@ export const TocPanel: React.FC<TocPanelProps> = ({
   toc,
   currentHref,
   onChapterSelect,
+  bookTitle,
 }) => {
+  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+
+  // Auto-expand current chapter and its parents
+  const autoExpandedItems = useMemo(() => {
+    const expanded = new Set(expandedItems);
+    
+    const findAndExpandParents = (items: TocItem[], targetHref: string): string[] => {
+      for (const item of items) {
+        if (item.href === targetHref) {
+          return [item.id];
+        }
+        if (item.subitems) {
+          const path = findAndExpandParents(item.subitems, targetHref);
+          if (path.length > 0) {
+            return [item.id, ...path];
+          }
+        }
+      }
+      return [];
+    };
+
+    const pathToCurrent = findAndExpandParents(toc, currentHref);
+    pathToCurrent.forEach(id => expanded.add(id));
+    
+    return expanded;
+  }, [toc, currentHref, expandedItems]);
+
+  const handleToggleExpand = (itemId: string) => {
+    setExpandedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  };
+
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="left" className="w-80 sm:w-80 p-0">
-        <SheetHeader className="p-0">
-          <Tabs defaultValue="toc" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="toc" className="flex items-center gap-2">
-                <List className="h-4 w-4" />
-                TOC
-              </TabsTrigger>
-              <TabsTrigger value="highlights" disabled className="flex items-center gap-2">
-                <PenTool className="h-4 w-4" />
-                Notes
-              </TabsTrigger>
-              <TabsTrigger value="bookmarks" disabled className="flex items-center gap-2">
-                <Bookmark className="h-4 w-4" />
-                Marks
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="toc" className="mt-0">
-              <div className="h-[calc(100vh-60px)] overflow-auto">
-                {toc.map((item, index) => (
-                  <TocItem
-                    key={item.id}
-                    item={item}
-                    selected={(item) => item.href === currentHref}
-                    onClick={(item) => {
-                      onChapterSelect(item.href, index);
-                      onClose();
-                    }}
-                  />
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+      <SheetContent side="left" className="w-96 p-0">
+        <SheetHeader className="px-6 py-4 border-b">
+          <SheetTitle className="flex items-center gap-2">
+            <BookOpen className="h-5 w-5" />
+            Table of Contents
+          </SheetTitle>
+          {bookTitle && (
+            <p className="text-sm text-muted-foreground truncate mt-1">
+              {bookTitle}
+            </p>
+          )}
         </SheetHeader>
+        
+        <div className="h-[calc(100vh-140px)] overflow-y-auto">
+          {toc.length > 0 ? (
+            toc.map((item, index) => (
+              <TocItem
+                key={item.id}
+                item={item}
+                level={0}
+                selected={(item) => item.href === currentHref}
+                onClick={(item) => {
+                  onChapterSelect(item.href, index);
+                  onClose();
+                }}
+                expandedItems={autoExpandedItems}
+                onToggleExpand={handleToggleExpand}
+              />
+            ))
+          ) : (
+            <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
+              <BookOpen className="h-8 w-8 mb-2" />
+              <p className="text-sm">No table of contents available</p>
+            </div>
+          )}
+        </div>
       </SheetContent>
     </Sheet>
   );

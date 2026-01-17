@@ -11,14 +11,14 @@ import type { ReaderSettings } from '../core/types/epub.types';
 describe('ChapterView', () => {
   const mockSettings: ReaderSettings = {
     fontSize: 18,
-    theme: 'sepia',
     lineHeight: 1.6,
     fontFamily: 'Georgia, serif',
+    align: 'left',
   };
 
   it('renders chapter content', () => {
     const content = '<p>Test chapter content</p>';
-    const { container } = render(<ChapterView content={content} settings={mockSettings} />);
+    const { container } = render(<ChapterView href="test" content={content} settings={mockSettings} />);
     
     expect(container.textContent).toContain('Test chapter content');
   });
@@ -26,7 +26,7 @@ describe('ChapterView', () => {
   it('applies custom font size from settings', () => {
     const content = '<p>Test content</p>';
     const { container } = render(
-      <ChapterView content={content} settings={{ ...mockSettings, fontSize: 24 }} />
+      <ChapterView href="test" content={content} settings={{ ...mockSettings, fontSize: 24 }} />
     );
 
     expect(container).toBeTruthy();
@@ -34,7 +34,7 @@ describe('ChapterView', () => {
 
   it('renders without onScroll handler', () => {
     const content = '<p>Test content</p>';
-    const { container } = render(<ChapterView content={content} settings={mockSettings} />);
+    const { container } = render(<ChapterView href="test" content={content} settings={mockSettings} />);
     
     expect(container).toBeTruthy();
   });
@@ -43,7 +43,7 @@ describe('ChapterView', () => {
     const onScroll = vi.fn();
     const content = '<p>Test content</p>';
     
-    render(<ChapterView content={content} settings={mockSettings} onScroll={onScroll} />);
+    render(<ChapterView href="test" content={content} settings={mockSettings} onScroll={onScroll} />);
     
     // Test that scroll handler is set up
     expect(onScroll).not.toHaveBeenCalled();

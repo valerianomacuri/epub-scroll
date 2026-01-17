@@ -33,7 +33,6 @@ export interface ReadingProgress {
 
 export interface ReaderSettings {
   fontSize: number;
-  theme: 'light' | 'dark' | 'sepia';
   lineHeight: number;
   fontFamily: string;
   align: string;

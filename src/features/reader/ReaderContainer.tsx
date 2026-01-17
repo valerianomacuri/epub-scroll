@@ -55,6 +55,12 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
     );
   }, [currentChapter?.href, snipeItems]);
 
+  // Calculate progress percentage
+  const progress = useMemo(() => {
+    if (!snipeItems || !currentSnipeItem) return 0;
+    return ((currentSnipeItem.index + 1) / snipeItems.length) * 100;
+  }, [snipeItems, currentSnipeItem]);
+
   const nextChapter = async () => {
     if (!snipeItems || !currentSnipeItem) return;
     if (currentSnipeItem.index === snipeItems.length - 1) return;
@@ -202,6 +208,7 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
         onHomeClick={onClose}
         settings={settings}
         onSettingsChange={handleSettingsChange}
+        progress={progress}
       />
       <div className="flex-1 overflow-hidden">
         {currentChapter && (
