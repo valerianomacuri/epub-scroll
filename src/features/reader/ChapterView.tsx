@@ -4,23 +4,7 @@
  */
 
 import React, { ReactNode, useEffect, useRef } from 'react';
-import { Box, SxProps, Theme } from '@mui/material';
 import type { ReaderSettings } from '../../core/types/epub.types';
-
-const chapterViewStyles: SxProps<Theme> = (theme) => ({
-  maxWidth: 800,
-  mx: 'auto',
-  p: { xs: 2, sm: 4, md: 6 },
-  'p, h1, h2, h3, h4, h5, h6, ul, ol, li, blockquote, span, a, strong, i, em, font':
-    {
-      color: `${theme.palette.text.primary} !important`,
-    },
-  a: {
-    textDecoration: 'underline !important',
-    borderBottom: 'none !important',
-    cursor: 'pointer',
-  },
-});
 
 interface ChapterViewProps {
   href: string;
@@ -86,35 +70,17 @@ export const ChapterView: React.FC<ChapterViewProps> = ({
     element.scrollTop = 0;
   }, [content, href]);
 
-  // useEffect(() => {
-  //   if (!href) return;
-  //   if (!href.includes('#')) return;
-  //   const index = href.indexOf('#');
-  //   const hashUrl = href.substring(index);
-  //   window.location.hash = hashUrl;
-  // }, [content, href]);
-
-  // useEffect(() => {
-  //   if (!content) return;
-  //   const element = contentRef.current;
-  //   if (!element) return;
-  //   element.scrollTop = 0;
-  // }, [content]);
-
   return (
-    <Box
+    <div
       id="epub-container-view"
       ref={contentRef}
-      sx={{
-        height: '100%',
-        overflow: 'auto',
-      }}
+      className="h-full overflow-auto"
     >
-      <Box
+      <div
+        className="max-w-2xl mx-auto p-4 md:p-6 [&_p]:text-foreground [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_h4]:text-foreground [&_h5]:text-foreground [&_h6]:text-foreground [&_ul]:text-foreground [&_ol]:text-foreground [&_li]:text-foreground [&_blockquote]:text-foreground [&_span]:text-foreground [&_strong]:text-foreground [&_em]:text-foreground [&_i]:text-foreground [&_font]:text-foreground [&_a]:underline [&_a]:no-underline [&_a]:cursor-pointer prose prose-neutral dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: content }}
-        sx={chapterViewStyles}
       />
       {footer}
-    </Box>
+    </div>
   );
 };

@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Box, CircularProgress, Link, Typography } from '@mui/material';
+import { Progress } from '@/components/ui/progress';
 import { EpubService } from '../../core/epub/EpubService';
 import { StorageService } from '../../core/storage/StorageService';
 import type {
@@ -177,41 +177,25 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-        }}
-      >
-        <CircularProgress />
-      </Box>
+      <div className="flex items-center justify-center h-screen">
+        <Progress value={undefined} className="w-8" />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          p: 3,
-        }}
-      >
-        <Typography variant="h6" color="error" gutterBottom>
+      <div className="flex flex-col items-center justify-center h-screen p-8">
+        <h3 className="text-lg font-semibold text-destructive mb-2">
           Error loading book
-        </Typography>
-        <Typography color="text.secondary">{error}</Typography>
-      </Box>
+        </h3>
+        <p className="text-muted-foreground text-center">{error}</p>
+      </div>
     );
   }
 
   return (
-    <Box sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="h-screen flex flex-col">
       <ReaderToolbar
         bookTitle={metadata?.title || 'Unknown Book'}
         onMenuClick={() => setTocOpen(true)}
@@ -219,67 +203,33 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
         settings={settings}
         onSettingsChange={handleSettingsChange}
       />
-      <Box sx={{ flex: 1, overflow: 'hidden' }}>
+      <div className="flex-1 overflow-hidden">
         {currentChapter && (
           <ChapterView
             initialScrollPosition={initialScrollPosition}
             href={currentChapter.href}
             content={currentChapter.content}
             footer={
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: 3,
-                  maxWidth: 800,
-                  mx: 'auto',
-                  p: { xs: 3, sm: 4, md: 6 },
-                  pb: { xs: 6, sm: 8, md: 12 },
-                }}
-              >
-                <Link
-                  component="button"
-                  color="inherit"
-                  variant="body2"
-                  sx={(theme) => ({
-                    fontFamily: 'inherit',
-                    fontSize: 'inherit',
-                    color: theme.palette.text.primary,
-                    textDecoration: 'underline',
-                    verticalAlign: 'baseline',
-                    '*': {
-                      textDecoration: 'underline',
-                    },
-                  })}
+              <div className="flex justify-center gap-12 max-w-2xl mx-auto p-4 md:p-6 pb-8 md:pb-12">
+                <button
+                  className="text-sm underline hover:no-underline text-foreground"
                   onClick={prevChapter}
                 >
                   Prev page
-                </Link>
-                <Link
-                  component="button"
-                  color="inherit"
-                  variant="body2"
-                  sx={(theme) => ({
-                    fontFamily: 'inherit',
-                    fontSize: 'inherit',
-                    color: theme.palette.text.primary,
-                    textDecoration: 'underline',
-                    verticalAlign: 'baseline',
-                    '*': {
-                      textDecoration: 'underline',
-                    },
-                  })}
+                </button>
+                <button
+                  className="text-sm underline hover:no-underline text-foreground"
                   onClick={nextChapter}
                 >
                   Next page
-                </Link>
-              </Box>
+                </button>
+              </div>
             }
             settings={settings}
             onScroll={handleScroll}
           />
         )}
-      </Box>
+      </div>
 
       {currentChapter && (
         <TocPanel
@@ -291,6 +241,6 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
           bookTitle={metadata?.title}
         />
       )}
-    </Box>
+    </div>
   );
 };

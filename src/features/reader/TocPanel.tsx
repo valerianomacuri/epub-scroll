@@ -3,25 +3,17 @@
  * Single Responsibility: Display TOC navigation
  */
 
-import React, { MouseEventHandler, TouchEventHandler, useState } from 'react';
-import {
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemText,
-  Toolbar,
-  Box,
-  IconButton,
-  Tabs,
-  Tab,
-} from '@mui/material';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sheet, SheetContent, SheetHeader } from '@/components/ui/sheet';
 import {
   Bookmark,
-  Create,
-  ExpandLess,
-  ExpandMore,
-  Toc,
-} from '@mui/icons-material';
+  PenTool,
+  ChevronDown,
+  ChevronUp,
+  List,
+} from 'lucide-react';
 import type { TocItem } from '../../core/types/epub.types';
 
 interface TocPanelProps {
@@ -32,6 +24,7 @@ interface TocPanelProps {
   onChapterSelect: (href: string, index: number) => void;
   bookTitle?: string;
 }
+
 interface TocItemProps {
   item: TocItem;
   level?: number;
@@ -42,52 +35,44 @@ interface TocItemProps {
 const TocItem = ({ item, level = 0, selected, onClick }: TocItemProps) => {
   const [open, setOpen] = useState(false);
 
-  const handleClick: MouseEventHandler<HTMLButtonElement> = (e) => {
+  const handleExpand = (e: React.MouseEvent) => {
     e.stopPropagation();
     setOpen(!open);
   };
 
-  const stopMouseRippleOnParent: MouseEventHandler<HTMLButtonElement> = (e) => {
-    e.stopPropagation();
-  };
-
-  const stopTouchRippleOnParent: TouchEventHandler<HTMLButtonElement> = (e) => {
-    e.stopPropagation();
-  };
-
   return (
     <React.Fragment key={item.id}>
-      <ListItemButton
-        selected={selected(item)}
+      <button
+        className={`w-full text-left px-2 py-2 hover:bg-accent transition-colors ${
+          selected(item) ? 'bg-accent text-accent-foreground' : 'text-foreground'
+        } ${level > 0 ? `pl-${4 + level * 4}` : 'pl-2'}`}
+        style={{ paddingLeft: `${8 + level * 16}px` }}
         onClick={() => onClick(item)}
-        sx={{ pl: 2 + level * 2 }}
       >
-        <ListItemText
-          primary={item.label}
-          primaryTypographyProps={{
-            variant: 'body2',
-            fontWeight: selected(item) ? 600 : 400,
-          }}
-        />
-        {(item.subitems?.length || -1) > 0 &&
-          (open ? (
-            <IconButton
-              onMouseDown={stopMouseRippleOnParent}
-              onTouchStart={stopTouchRippleOnParent}
-              onClick={handleClick}
+        <div className="flex items-center justify-between">
+          <span
+            className={`text-sm ${
+              selected(item) ? 'font-semibold' : 'font-normal'
+            }`}
+          >
+            {item.label}
+          </span>
+          {(item.subitems?.length || -1) > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0"
+              onClick={handleExpand}
             >
-              <ExpandLess />
-            </IconButton>
-          ) : (
-            <IconButton
-              onMouseDown={stopMouseRippleOnParent}
-              onTouchStart={stopTouchRippleOnParent}
-              onClick={handleClick}
-            >
-              <ExpandMore />
-            </IconButton>
-          ))}
-      </ListItemButton>
+              {open ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+          )}
+        </div>
+      </button>
       {open &&
         item.subitems?.map((subitem) => (
           <TocItem
@@ -110,45 +95,42 @@ export const TocPanel: React.FC<TocPanelProps> = ({
   onChapterSelect,
 }) => {
   return (
-    <Drawer
-      anchor="left"
-      open={open}
-      keepMounted
-      onClose={onClose}
-      sx={{
-        '& .MuiDrawer-paper': {
-          width: { xs: '80%', sm: 320 },
-        },
-      }}
-    >
-      <Toolbar
-        sx={{
-          padding: '0px !important',
-        }}
-      >
-        <Box width={'100%'}>
-          <Tabs aria-label="icon tabs" value="toc" variant="fullWidth">
-            <Tab value="toc" icon={<Toc />} aria-label="table of content" />
-            <Tab icon={<Create />} aria-label="highlighted" disabled />
-            <Tab icon={<Bookmark />} aria-label="markers" disabled />
+    <Sheet open={open} onOpenChange={onClose}>
+      <SheetContent side="left" className="w-80 sm:w-80 p-0">
+        <SheetHeader className="p-0">
+          <Tabs defaultValue="toc" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="toc" className="flex items-center gap-2">
+                <List className="h-4 w-4" />
+                TOC
+              </TabsTrigger>
+              <TabsTrigger value="highlights" disabled className="flex items-center gap-2">
+                <PenTool className="h-4 w-4" />
+                Notes
+              </TabsTrigger>
+              <TabsTrigger value="bookmarks" disabled className="flex items-center gap-2">
+                <Bookmark className="h-4 w-4" />
+                Marks
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="toc" className="mt-0">
+              <div className="h-[calc(100vh-60px)] overflow-auto">
+                {toc.map((item, index) => (
+                  <TocItem
+                    key={item.id}
+                    item={item}
+                    selected={(item) => item.href === currentHref}
+                    onClick={(item) => {
+                      onChapterSelect(item.href, index);
+                      onClose();
+                    }}
+                  />
+                ))}
+              </div>
+            </TabsContent>
           </Tabs>
-        </Box>
-      </Toolbar>
-      <Box sx={{ overflow: 'auto', flex: 1 }}>
-        <List sx={{ marginLeft: '0px !important', padding: '0px !important' }}>
-          {toc.map((item, index) => (
-            <TocItem
-              key={item.id}
-              item={item}
-              selected={(item) => item.href === currentHref}
-              onClick={(item) => {
-                onChapterSelect(item.href, index);
-                onClose();
-              }}
-            />
-          ))}
-        </List>
-      </Box>
-    </Drawer>
+        </SheetHeader>
+      </SheetContent>
+    </Sheet>
   );
 };

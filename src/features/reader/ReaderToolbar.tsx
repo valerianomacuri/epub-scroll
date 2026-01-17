@@ -4,58 +4,25 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Box,
-  Menu,
-  MenuItem,
-  Slider,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  useScrollTrigger,
-  Slide,
-  Paper,
   Dialog,
-  Stack,
-} from '@mui/material';
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
-  Menu as MenuIcon,
-  Settings as SettingsIcon,
-  Home as HomeIcon,
-  Circle,
-} from '@mui/icons-material';
+  Menu,
+  Settings,
+  Home,
+} from 'lucide-react';
 import type { ReaderSettings } from '../../core/types/epub.types';
-
-enum Theme {
-  DARK = 'dark',
-  LIGHT = 'light',
-  SEPIA = 'sepia',
-}
 
 interface HideOnScrollProps {
   children?: React.ReactElement<unknown>;
 }
-
-const HideOnScroll = (props: HideOnScrollProps) => {
-  const { children } = props;
-  const trigger = useScrollTrigger({
-    target: document.getElementById('epub-container-view'),
-    disableHysteresis: true,
-    threshold: 0,
-  });
-
-  return (
-    <Slide appear={false} direction="down" in={!trigger}>
-      {children ?? <div />}
-    </Slide>
-  );
-};
 
 interface ReaderToolbarProps {
   bookTitle: string;
@@ -74,7 +41,7 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleSettingsClick = () => {
     setOpen(true);
   };
 
@@ -84,96 +51,74 @@ export const ReaderToolbar: React.FC<ReaderToolbarProps> = ({
 
   return (
     <>
-      <AppBar
-        style={{ margin: '0px !important' }}
-        sx={{ margin: '0px !important' }}
-        position="sticky"
-        color="default"
-        elevation={1}
-      >
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
+      <div className="sticky top-0 z-50 bg-background border-b shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3">
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onMenuClick}
             aria-label="menu"
           >
-            <MenuIcon />
-          </IconButton>
+            <Menu className="h-5 w-5" />
+          </Button>
 
-          <Box sx={{ flex: 1, ml: 2, overflow: 'hidden' }}>
-            <Typography variant="subtitle1" fontWeight="bold" noWrap>
+          <div className="flex-1 ml-2 overflow-hidden">
+            <h2 className="text-sm font-semibold truncate">
               {bookTitle}
-            </Typography>
-          </Box>
+            </h2>
+          </div>
 
-          <IconButton color="inherit" onClick={handleSettingsClick}>
-            <SettingsIcon />
-          </IconButton>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSettingsClick}
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
 
-          <IconButton color="inherit" onClick={onHomeClick} edge="end">
-            <HomeIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-      <Dialog
-        keepMounted
-        open={open}
-        onClose={handleClose}
-        sx={{ top: 0, left: 0 }}
-        slotProps={{
-          paper: {
-            elevation: 1,
-            sx: {
-              width: 320,
-              px: 3,
-              py: 2,
-              m: 1,
-              gap: 1,
-            },
-            style: {
-              position: 'absolute',
-              top: 0,
-              right: 0,
-            },
-          },
-        }}
-      >
-        <FormControl fullWidth sx={{ mb: 3 }}>
-          <FormLabel>Theme</FormLabel>
-          <RadioGroup
-            row
-            value={settings.theme}
-            onChange={(e) =>
-              onSettingsChange({
-                theme: e.target.value as ReaderSettings['theme'],
-              })
-            }
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onHomeClick}
           >
-            <FormControlLabel value="light" control={<Radio />} label="Light" />
-            <FormControlLabel value="dark" control={<Radio />} label="Dark" />
-            <FormControlLabel value="sepia" control={<Radio />} label="Sepia" />
-          </RadioGroup>
-        </FormControl>
-        {/* <FormControl fullWidth sx={{ mb: 3 }}>
-          <FormLabel>Text Align</FormLabel>
-          <RadioGroup
-            row
-            value={settings.align}
-            onChange={(e) =>
-              onSettingsChange({
-                align: e.target.value as ReaderSettings['align'],
-              })
-            }
-          >
-            <FormControlLabel value="left" control={<Radio />} label="Left" />
-            <FormControlLabel
-              value="justify"
-              control={<Radio />}
-              label="Justify"
-            />
-          </RadioGroup>
-        </FormControl> */}
+            <Home className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[320px]">
+          <DialogHeader>
+            <DialogTitle>Settings</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Theme</Label>
+              <RadioGroup
+                value={settings.theme}
+                onValueChange={(value) =>
+                  onSettingsChange({
+                    theme: value as ReaderSettings['theme'],
+                  })
+                }
+                className="flex flex-row space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="light" id="light" />
+                  <Label htmlFor="light">Light</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="dark" id="dark" />
+                  <Label htmlFor="dark">Dark</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="sepia" id="sepia" />
+                  <Label htmlFor="sepia">Sepia</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+        </DialogContent>
       </Dialog>
     </>
   );

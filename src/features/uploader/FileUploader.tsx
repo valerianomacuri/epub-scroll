@@ -4,14 +4,9 @@
  */
 
 import React from 'react';
-import {
-  Box,
-  Button,
-  Typography,
-  Paper,
-  CircularProgress,
-} from '@mui/material';
-import { Upload as UploadIcon } from '@mui/icons-material';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Upload } from 'lucide-react';
 
 interface FileUploaderProps {
   onFileSelect: (file: File) => void;
@@ -32,60 +27,45 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '60vh',
-        p: 3,
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          p: 6,
-          textAlign: 'center',
-          maxWidth: 500,
-          width: '100%',
-        }}
-      >
-        <UploadIcon sx={{ fontSize: 64, color: 'primary.main', mb: 2 }} />
+    <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
+      <div className="bg-card rounded-lg shadow-lg p-8 text-center max-w-md w-full border">
+        <Upload className="w-16 h-16 text-primary mx-auto mb-4" />
         
-        <Typography variant="h4" gutterBottom>
+        <h1 className="text-3xl font-semibold mb-2">
           EPUB Reader
-        </Typography>
+        </h1>
         
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        <p className="text-muted-foreground mb-6">
           Upload an EPUB file to start reading
-        </Typography>
+        </p>
 
         {loading ? (
-          <CircularProgress />
+          <Progress value={undefined} className="w-full" />
         ) : (
           <Button
-            variant="contained"
-            component="label"
-            size="large"
-            startIcon={<UploadIcon />}
+            asChild
+            size="lg"
+            className="w-full"
           >
-            Select EPUB File
-            <input
-              type="file"
-              accept=".epub"
-              hidden
-              onChange={handleFileChange}
-            />
+            <label className="cursor-pointer">
+              <Upload className="w-4 h-4 mr-2" />
+              Select EPUB File
+              <input
+                type="file"
+                accept=".epub"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
           </Button>
         )}
 
         {error && (
-          <Typography color="error" sx={{ mt: 2 }}>
+          <p className="text-destructive mt-2 text-sm">
             {error}
-          </Typography>
+          </p>
         )}
-      </Paper>
-    </Box>
+      </div>
+    </div>
   );
 };

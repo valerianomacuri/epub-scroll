@@ -4,7 +4,6 @@
  */
 
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
 import { FileUploader } from '../features/uploader/FileUploader';
 import { ReaderContainer } from '../features/reader/ReaderContainer';
 import { ThemeProvider } from '../components/ThemeProvider';
@@ -32,17 +31,17 @@ const Index = () => {
 
   return (
     <ThemeProvider>
-      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <div className="min-h-screen bg-background">
         {!selectedFile ? (
           <FileUploader
             onFileSelect={handleFileSelect}
             loading={loading}
-            error={error}
+            error={error || undefined}
           />
         ) : (
           <ReaderContainer file={selectedFile} onClose={handleClose} />
         )}
-      </Box>
+      </div>
     </ThemeProvider>
   );
 };

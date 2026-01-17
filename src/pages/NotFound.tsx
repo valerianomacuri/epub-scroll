@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { Box, Typography, Button } from "@mui/material";
-import { Home as HomeIcon } from "@mui/icons-material";
+import { Button } from "@/components/ui/button";
+import { Home } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
@@ -11,34 +11,23 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        bgcolor: 'background.default',
-        p: 3,
-      }}
-    >
-      <Typography variant="h1" sx={{ fontSize: '6rem', fontWeight: 700, color: 'primary.main' }}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-8">
+      <h1 className="text-9xl font-bold text-primary">
         404
-      </Typography>
-      <Typography variant="h5" gutterBottom>
+      </h1>
+      <h2 className="text-xl font-semibold mb-4">
         Oops! Page not found
-      </Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+      </h2>
+      <p className="text-muted-foreground mb-8 text-center">
         The page you're looking for doesn't exist.
-      </Typography>
-      <Button
-        variant="contained"
-        startIcon={<HomeIcon />}
-        href="/"
-      >
-        Return to Home
+      </p>
+      <Button asChild>
+        <a href="/" className="flex items-center gap-2">
+          <Home className="h-4 w-4" />
+          Return to Home
+        </a>
       </Button>
-    </Box>
+    </div>
   );
 };
 
