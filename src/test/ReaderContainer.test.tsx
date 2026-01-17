@@ -40,8 +40,9 @@ describe('ReaderContainer', () => {
 
   it('renders loading state initially', () => {
     const { container } = render(<ReaderContainer file={mockFile} onClose={vi.fn()} />);
-    const progressbar = container.querySelector('[role="progressbar"]');
-    expect(progressbar).toBeTruthy();
+    const loadingText = container.textContent?.includes('Loading book...');
+    const spinner = container.querySelector('.animate-spin');
+    expect(loadingText || spinner).toBeTruthy();
   });
 
   it('loads book successfully', async () => {

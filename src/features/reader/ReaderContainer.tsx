@@ -183,8 +183,9 @@ export const ReaderContainer: React.FC<ReaderContainerProps> = ({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Progress value={undefined} className="w-8" />
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/20 border-t-primary" />
+        <p className="text-muted-foreground">Loading book...</p>
       </div>
     );
   }

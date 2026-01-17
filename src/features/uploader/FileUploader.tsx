@@ -40,7 +40,10 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         </p>
 
         {loading ? (
-          <Progress value={undefined} className="w-full" />
+          <div className="flex flex-col items-center gap-3 w-full">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary/20 border-t-primary" />
+            <p className="text-sm text-muted-foreground">Processing file...</p>
+          </div>
         ) : (
           <Button
             asChild
