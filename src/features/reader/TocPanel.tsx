@@ -178,7 +178,7 @@ export const TocPanel: React.FC<TocPanelProps> = ({
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="left" className="w-96 p-0">
+      <SheetContent side="left" className="w-[22rem] p-0">
         <SheetHeader className="px-6 py-4 border-b">
           <SheetTitle className="flex items-center gap-2">
             <BookOpen className="h-5 w-5" />
