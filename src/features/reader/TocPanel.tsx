@@ -3,14 +3,14 @@
  * Single Responsibility: Display TOC navigation
  */
 
-import React, { useState, useMemo } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
-  ChevronRight,
-  ChevronDown,
   BookOpen,
+  ChevronDown,
+  ChevronRight,
   FileText,
 } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 import type { TocItem } from '../../core/types/epub.types';
 
 interface TocPanelProps {
@@ -60,18 +60,18 @@ const TocItem = ({
       <div
         className={`
           group cursor-pointer transition-all duration-200
-          ${level === 0 ? 'py-3 px-4 border-b border-border/50' : 'py-2'}
+          ${level === 0 ? 'py-3 px-4 border-b border-border/50' : 'py-2 pr-2'}
           ${isSelected ? 'bg-primary/10 border-l-4 border-primary' : ''}
           hover:bg-accent/50
         `}
         style={{ 
-          paddingLeft: level === 0 ? '16px' : `${16 + level * 24}px`,
+          paddingLeft: level === 0 ? '16px' : `${level * 24}px`,
           marginLeft: level > 0 ? '8px' : '0'
         }}
         onClick={handleClick}
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
             {/* Icon for chapters vs subchapters */}
             {level === 0 ? (
               <BookOpen className={`h-4 w-4 flex-shrink-0 ${isSelected ? 'text-primary' : 'text-muted-foreground'}`} />
@@ -81,9 +81,8 @@ const TocItem = ({
             
             {/* Chapter/Section title */}
             <span className={`
-              truncate
               ${level === 0 
-                ? 'font-semibold text-base' 
+                ? 'font-semibold text-sm' 
                 : 'font-normal text-sm text-muted-foreground'
               }
               ${isSelected ? 'text-primary' : ''}
